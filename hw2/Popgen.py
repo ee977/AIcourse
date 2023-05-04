@@ -13,7 +13,7 @@ with open(os.path.join(DATASET_DIR, DATASET_NAME, "proficiency_levels.pkl"), "rb
     proficiency_levels: np.ndarray = pickle.load(f)
 
 population = []
-populationNumber = 2
+populationNumber = 100
 
 for i in range(populationNumber):
     individual = []
@@ -58,5 +58,7 @@ for i in range(populationNumber):
 
     population.append(individualDict)
 
-print(population[0]["individual"])
-print(population[1]["individual"])
+for i in range(populationNumber):
+    print(population[i]["individual"])
+    print(population[i]["checklist"][0])
+
