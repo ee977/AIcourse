@@ -13,7 +13,7 @@ with open(os.path.join(DATASET_DIR, DATASET_NAME, "proficiency_levels.pkl"), "rb
     proficiency_levels: np.ndarray = pickle.load(f)
 
 population = []
-populationNumber = 100
+populationNumber = 1
 
 for i in range(populationNumber):
     individual = []
@@ -52,13 +52,26 @@ for i in range(populationNumber):
             sumInd += len(individual[i])
         randomChooseStudent -= 1
 
-    individualDict = {"individual": [], "checklist": []}
+    individualDict = {"fitness": float, "individual": [], "checklist": []}
     individualDict["individual"].append(individual)
     individualDict["checklist"].append(checklist)
 
     population.append(individualDict)
 
-for i in range(populationNumber):
+"""for i in range(populationNumber):
     print(population[i]["individual"])
     print(population[i]["checklist"][0])
+"""
+
+print(population[0]["individual"][0])
+#fitness function
+fitnessScore=0
+for i in range(len(population[0]["individual"][0][0])):
+    #fitnessScore =
+    print(population[0]["individual"][0][0][i])
+    print(proficiency_levels[population[0]["individual"][0][0][i]])
+
+print(requirements[0])
+
+print(np.dot(requirements[0], proficiency_levels[population[0]["individual"][0][0][0]]))
 
