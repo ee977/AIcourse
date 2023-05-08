@@ -14,7 +14,7 @@ with open(os.path.join(DATASET_DIR, DATASET_NAME, "proficiency_levels.pkl"), "rb
     proficiency_levels: np.ndarray = pickle.load(f)
 
 population = []
-populationNumber = 4
+populationNumber = 10
 iteration = 1
 elitismPercentage = 0.1
 
@@ -60,7 +60,7 @@ for i in range(populationNumber):   # population generation
     population.append(individualDict)
 
 
-for i in range(iteration):
+for iter in range(iteration):
 
     for x in range(populationNumber):  # fitness function for pop
         fitnessScore = 0
@@ -72,26 +72,55 @@ for i in range(iteration):
                 # print(np.dot(requirements[i], proficiency_levels[population[x]["individual"][0][i][j]]))
         population[x]["fitness"] = fitnessScore  # update old 0
 
-    print(population[0]["fitness"])
+    """print(population[0]["fitness"])
     print(population[1]["fitness"])
     print(population[2]["fitness"])
-    print(population[3]["fitness"])
+    print(population[3]["fitness"])"""
 
     sortedPop = sorted(population, key=lambda x: x['fitness'], reverse= True)   #sort by fitness score
-    print(sortedPop)
+    #print(sortedPop)
 
 
-    newGen = []
-    print(math.ceil(populationNumber * elitismPercentage))
-    for j in range(math.ceil(populationNumber * elitismPercentage)):     # ELITISM
+    newGen = []         # check the elitism before and after selection
+    #print(math.ceil(populationNumber * elitismPercentage))
+    elitismNumber = math.ceil(populationNumber * elitismPercentage)
+    for j in range(elitismNumber):     # ELITISM
         newGen.append(sortedPop[j])                        # for holding the elites
 
-    projectList = list(range(0, requirements.shape[0]))
-    for j in range(requirements.shape[0]):
-        randProject = random.randint(0, len(projectList) - 1)
+    indvList = list(range(0, populationNumber))
+    print(sortedPop)
+    print(newGen)
+    print(indvList)
+    mod0 = [-1, -1]
+    mod1 = [-1, -1]
+    mod2 = [-1, -1]
+    mod3 = [-1, -1]
+    for j in range(populationNumber):
+        randIndv = random.randint(0, len(indvList) - 1)
+        del indvList[randIndv]
+        if j % 4 == 0:
+            mod0[1] = max(mod0[1], population[randIndv]["fitness"])
+            if mod0[1] == population[randIndv]["fitness"]:
+                mod0[0] = randIndv
+            print(mod0[1])
+        elif j % 4 == 1:
+            mod1[1] = max(mod1[1], population[randIndv]["fitness"])
+            if mod1[1] == population[randIndv]["fitness"]:
+                mod1[0] = randIndv
+            print(j)
+        elif j % 4 == 2:
+            mod2[1] = max(mod2[1], population[randIndv]["fitness"])
+            if mod2[1] == population[randIndv]["fitness"]:
+                mod2[0] = randIndv
+            print(j)
+        else:
+            mod3[1] = max(mod3[1], population[randIndv]["fitness"])
+            if mod3[1] == population[randIndv]["fitness"]:
+                mod3[0] = randIndv
+            print()
 
 
-        del projectList[randProject]
-    print(projectList)
-
+    print(indvList)
+print(newGen)
+print()
 # asd = sorted(population,key = "fitness")
