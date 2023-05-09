@@ -71,7 +71,7 @@ for iter in range(iteration):
                 fitnessScore += np.dot(requirements[i], proficiency_levels[population[x]["individual"][0][i][j]])
                 # print(np.dot(requirements[i], proficiency_levels[population[x]["individual"][0][i][j]]))
         population[x]["fitness"] = fitnessScore  # update old 0
-
+    print(population)
     """print(population[0]["fitness"])
     print(population[1]["fitness"])
     print(population[2]["fitness"])
@@ -87,37 +87,28 @@ for iter in range(iteration):
     for j in range(elitismNumber):     # ELITISM
         newGen.append(sortedPop[j])                        # for holding the elites
 
+
     indvList = list(range(0, populationNumber))
-    print(sortedPop)
-    print(newGen)
-    print(indvList)
     mod0 = [-1, -1]
-    mod1 = [-1, -1]
-    mod2 = [-1, -1]
-    mod3 = [-1, -1]
+    counter = 0
+    bestOf = 3
     for j in range(populationNumber):
         randIndv = random.randint(0, len(indvList) - 1)
+
+        mod0[1] = max(mod0[1], sortedPop[indvList[randIndv]]["fitness"])
+        if mod0[1] == sortedPop[indvList[randIndv]]["fitness"]:
+            mod0[0] = indvList[randIndv]
+
+        if counter == bestOf:
+            newGen.append(sortedPop[mod0[0]])
+            mod0 = [-1, -1]
+            counter = 0
         del indvList[randIndv]
-        if j % 4 == 0:
-            mod0[1] = max(mod0[1], population[randIndv]["fitness"])
-            if mod0[1] == population[randIndv]["fitness"]:
-                mod0[0] = randIndv
-            print(mod0[1])
-        elif j % 4 == 1:
-            mod1[1] = max(mod1[1], population[randIndv]["fitness"])
-            if mod1[1] == population[randIndv]["fitness"]:
-                mod1[0] = randIndv
-            print(j)
-        elif j % 4 == 2:
-            mod2[1] = max(mod2[1], population[randIndv]["fitness"])
-            if mod2[1] == population[randIndv]["fitness"]:
-                mod2[0] = randIndv
-            print(j)
-        else:
-            mod3[1] = max(mod3[1], population[randIndv]["fitness"])
-            if mod3[1] == population[randIndv]["fitness"]:
-                mod3[0] = randIndv
-            print()
+        counter += 1
+
+    if populationNumber % (bestOf ) != 0:
+        newGen.append(sortedPop[mod0[0]])
+
 
 
     print(indvList)
