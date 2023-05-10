@@ -14,7 +14,7 @@ with open(os.path.join(DATASET_DIR, DATASET_NAME, "proficiency_levels.pkl"), "rb
     proficiency_levels: np.ndarray = pickle.load(f)
 
 population = []
-populationNumber = 10
+populationNumber = 17
 iteration = 1
 elitismPercentage = 0.1
 
@@ -71,7 +71,7 @@ for iter in range(iteration):
                 fitnessScore += np.dot(requirements[i], proficiency_levels[population[x]["individual"][0][i][j]])
                 # print(np.dot(requirements[i], proficiency_levels[population[x]["individual"][0][i][j]]))
         population[x]["fitness"] = fitnessScore  # update old 0
-    print(population)
+    #print(population)
     """print(population[0]["fitness"])
     print(population[1]["fitness"])
     print(population[2]["fitness"])
@@ -79,39 +79,59 @@ for iter in range(iteration):
 
     sortedPop = sorted(population, key=lambda x: x['fitness'], reverse= True)   #sort by fitness score
     #print(sortedPop)
-
-
     newGen = []         # check the elitism before and after selection
     #print(math.ceil(populationNumber * elitismPercentage))
     elitismNumber = math.ceil(populationNumber * elitismPercentage)
     for j in range(elitismNumber):     # ELITISM
         newGen.append(sortedPop[j])                        # for holding the elites
 
-
+    parents = []
     indvList = list(range(0, populationNumber))
     mod0 = [-1, -1]
     counter = 0
-    bestOf = 3
-    for j in range(populationNumber):
+    bestOf = 4
+    for j in range(populationNumber):   # TOURNAMENT SELECTION
         randIndv = random.randint(0, len(indvList) - 1)
 
         mod0[1] = max(mod0[1], sortedPop[indvList[randIndv]]["fitness"])
         if mod0[1] == sortedPop[indvList[randIndv]]["fitness"]:
             mod0[0] = indvList[randIndv]
 
-        if counter == bestOf:
-            newGen.append(sortedPop[mod0[0]])
+        if counter == (bestOf -1):
+            parents.append(sortedPop[mod0[0]])
             mod0 = [-1, -1]
-            counter = 0
+            counter = -1
         del indvList[randIndv]
         counter += 1
 
-    if populationNumber % (bestOf ) != 0:
-        newGen.append(sortedPop[mod0[0]])
+    if populationNumber % (bestOf ) != 0:   # add the one ones that are left if number is not divisible
+        parents.append(sortedPop[mod0[0]])
 
+    parentList = list(range(0, len(parents)))
+    print(parentList)
+    oddParent = False
+    if len(parents)%2 == 1:
+        oddParent = True
+    for j in range(math.ceil(len(parents)/2)):  # CROSSOVER
+        randFemale = random.randint(0, len(parentList) - 1)
+        female = parentList[randFemale]
+        del parentList[randFemale]
 
+        randMale = random.randint(0, len(parentList) - 1)
+        male = parentList[randMale]
+        if oddParent == False:
+            del parentList[randMale]
+        else:
+            oddParent = False
+        print("çift")
+        print(parents[male])
+        print(parents[female])
 
-    print(indvList)
-print(newGen)
+        child1 = {"fitness": float, "individual": [], "checklist": []}
+        child2 = {"fitness": float, "individual": [], "checklist": []}
+        print(child1)
+        print(parents[male]["individual"][0])
+
+#print(parents)
 print()
 # asd = sorted(population,key = "fitness")
