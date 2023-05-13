@@ -17,6 +17,7 @@ population = []
 populationNumber = 17
 iteration = 1
 elitismPercentage = 0.1
+mutationRate = 0.01
 
 for i in range(populationNumber):   # population generation
     individual = []
@@ -61,26 +62,14 @@ for i in range(populationNumber):   # population generation
 
 
 for iter in range(iteration):
-
     for x in range(populationNumber):  # fitness function for pop
         fitnessScore = 0
         for i in range(requirements.shape[0]):  # fitness function for ind
             for j in range(len(population[x]["individual"][0][i])):  # add all values
-                # print(proficiency_levels[population[x]["individual"][0][i][j]])
-                # print(population[x]["individual"][0][i][j])
                 fitnessScore += np.dot(requirements[i], proficiency_levels[population[x]["individual"][0][i][j]])
-                # print(np.dot(requirements[i], proficiency_levels[population[x]["individual"][0][i][j]]))
         population[x]["fitness"] = fitnessScore  # update old 0
-    #print(population)
-    """print(population[0]["fitness"])
-    print(population[1]["fitness"])
-    print(population[2]["fitness"])
-    print(population[3]["fitness"])"""
-
     sortedPop = sorted(population, key=lambda x: x['fitness'], reverse= True)   #sort by fitness score
-    #print(sortedPop)
     newGen = []         # check the elitism before and after selection
-    #print(math.ceil(populationNumber * elitismPercentage))
     elitismNumber = math.ceil(populationNumber * elitismPercentage)
     for j in range(elitismNumber):     # ELITISM
         newGen.append(sortedPop[j])                        # for holding the elites
@@ -89,10 +78,9 @@ for iter in range(iteration):
     indvList = list(range(0, populationNumber))
     mod0 = [-1, -1]
     counter = 0
-    bestOf = 4
+    bestOf = 2
     for j in range(populationNumber):   # TOURNAMENT SELECTION
         randIndv = random.randint(0, len(indvList) - 1)
-
         mod0[1] = max(mod0[1], sortedPop[indvList[randIndv]]["fitness"])
         if mod0[1] == sortedPop[indvList[randIndv]]["fitness"]:
             mod0[0] = indvList[randIndv]
@@ -103,16 +91,16 @@ for iter in range(iteration):
             counter = -1
         del indvList[randIndv]
         counter += 1
-
     if populationNumber % (bestOf) != 0:   # add the one ones that are left if number is not divisible
         parents.append(sortedPop[mod0[0]])
 
     parentList = list(range(0, len(parents)))
+    childsss = []
     #print(parentList)
     oddParent = False
     if len(parents)%2 == 1:
         oddParent = True
-    for j in range(1):  # CROSSOVER math.ceil(len(parents)/2)
+    for j in range(math.ceil(len(parents)/2)):  # CROSSOVER math.ceil(len(parents)/2)
         randFemale = random.randint(0, len(parentList) - 1)
         female = parentList[randFemale]
         del parentList[randFemale]
@@ -123,9 +111,9 @@ for iter in range(iteration):
             del parentList[randMale]
         else:
             oddParent = False
-        print("çift")
+        """print("çift")
         print(parents[male])
-        print(parents[female])
+        print(parents[female])"""
 
         child1 = {"fitness": float, "individual": [], "checklist": []}
         child2 = {"fitness": float, "individual": [], "checklist": []}
@@ -134,8 +122,8 @@ for iter in range(iteration):
         child1["checklist"] = parents[male]["checklist"][0]
         child2["individual"] = parents[female]["individual"][0]
         child2["checklist"] = parents[female]["checklist"][0]
-        print("child 1")
-        print(child1)
+        #print("child 1")
+        #print(child1)
         k = 0
         for l in range(len(parents[female]["individual"][0])):
             possible = True
@@ -172,9 +160,10 @@ for iter in range(iteration):
                             #child1["checklist"][child1["individual"][l][n]] -= 1
                             child1["individual"][l].append(parents[female]["individual"][0][l][n])
                             child1["checklist"][child1["individual"][l][n]] += 1
-        print(child1)
-        print("child 2 ")
-        print(child2)
+        #print(child1)
+        childsss.append(child1)
+        #print("child 2 ")
+        #print(child2)
         k = 0
         for l in range(len(parents[male]["individual"][0])):
             possible = True
@@ -211,9 +200,35 @@ for iter in range(iteration):
                             # child1["checklist"][child1["individual"][l][n]] -= 1
                             child2["individual"][l].append(parents[male]["individual"][0][l][n])
                             child2["checklist"][child2["individual"][l][n]] += 1
-        print(child2)
+        #print(child2)
+        childsss.append(child2)
+        #print(childsss)
+        for c in childsss:          # MUTATION
+            randomValue = random.random()
+            if randomValue < mutationRate:
+                randomTmp1 = random.randint(0, len(c) - 1)
+                randomTmp2 = random.randint(0, len(c) - 1)
+                temp = c["individual"][randomTmp1]
+                c["individual"][randomTmp1] = c["individual"][randomTmp2]
+                c["individual"][randomTmp2] = temp
 
+    for ind in childsss:
+        newGen.append(ind)
+    for ind in parents:
+        newGen.append(ind)
+    print(newGen)
+    print(newGen[0]["individual"][0][0])
+    print(requirements[0])
+    print(proficiency_levels[ newGen[0]["individual"][0][1][0] ])
+    print(len(newGen))
+    for x in range(len(newGen)):  # fitness function for pop
+        fitnessScore = 0
+        for i in range(requirements.shape[0]):  # fitness function for ind
+            for j in range(len(newGen[x]["individual"][0][i])):  # add all values
+                fitnessScore += np.dot( requirements[i], proficiency_levels[ newGen[x]["individual"][0][i][j] ]   )
+        newGen[x]["fitness"] = fitnessScore  # update old 0
+    sortedNewGen = sorted(newGen, key=lambda x: x['fitness'], reverse= True)   #sort by fitness score
 
 #print(parents)
-print()
+#print(childsss)
 
