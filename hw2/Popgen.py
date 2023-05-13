@@ -104,15 +104,15 @@ for iter in range(iteration):
         del indvList[randIndv]
         counter += 1
 
-    if populationNumber % (bestOf ) != 0:   # add the one ones that are left if number is not divisible
+    if populationNumber % (bestOf) != 0:   # add the one ones that are left if number is not divisible
         parents.append(sortedPop[mod0[0]])
 
     parentList = list(range(0, len(parents)))
-    print(parentList)
+    #print(parentList)
     oddParent = False
     if len(parents)%2 == 1:
         oddParent = True
-    for j in range(math.ceil(len(parents)/2)):  # CROSSOVER
+    for j in range(1):  # CROSSOVER math.ceil(len(parents)/2)
         randFemale = random.randint(0, len(parentList) - 1)
         female = parentList[randFemale]
         del parentList[randFemale]
@@ -129,9 +129,91 @@ for iter in range(iteration):
 
         child1 = {"fitness": float, "individual": [], "checklist": []}
         child2 = {"fitness": float, "individual": [], "checklist": []}
+
+        child1["individual"] = parents[male]["individual"][0]
+        child1["checklist"] = parents[male]["checklist"][0]
+        child2["individual"] = parents[female]["individual"][0]
+        child2["checklist"] = parents[female]["checklist"][0]
+        print("child 1")
         print(child1)
-        print(parents[male]["individual"][0])
+        k = 0
+        for l in range(len(parents[female]["individual"][0])):
+            possible = True
+            for m in range(len(parents[female]["individual"][0][l])):
+                if child1["checklist"][parents[female]["individual"][0][l][m]] >= 2: # if less than 2 project it has
+                    possible = False
+            if possible == True and k < requirements.shape[0] / 2:
+                k += 1
+                if len(parents[female]["individual"][0][l]) == len(child1["individual"][l]):
+                    for n in range(len(parents[female]["individual"][0][l])):
+                        child1["checklist"][child1["individual"][l][n]] -= 1
+                        child1["individual"][l][n] = parents[female]["individual"][0][l][n]
+                        child1["checklist"][child1["individual"][l][n]] += 1
+                elif len(parents[female]["individual"][0][l]) < len(child1["individual"][l]):
+                    forFixingNumber = -1
+                    for n in range(len(child1["individual"][l])):
+                        #print(child1["individual"][l])
+                        if n < len(parents[female]["individual"][0][l]):
+                            child1["checklist"][child1["individual"][l][n]] -= 1
+                            child1["individual"][l][n] = parents[female]["individual"][0][l][n]
+                            child1["checklist"][child1["individual"][l][n]] += 1
+                        elif n >= len(parents[female]["individual"][0][l]):
+                            forFixingNumber += 1
+                            child1["checklist"][child1["individual"][l][n - forFixingNumber]] -= 1
+                            del child1["individual"][l][n - forFixingNumber]
+                elif len(parents[female]["individual"][0][l]) > len(child1["individual"][l]):
+                    for n in range(len(parents[female]["individual"][0][l])):
+                        #print(child1["individual"][l])
+                        if n < len(child1["individual"][l]):
+                            child1["checklist"][child1["individual"][l][n]] -= 1
+                            child1["individual"][l][n] = parents[female]["individual"][0][l][n]
+                            child1["checklist"][child1["individual"][l][n]] += 1
+                        elif n >= len(child1["individual"][l]):
+                            #child1["checklist"][child1["individual"][l][n]] -= 1
+                            child1["individual"][l].append(parents[female]["individual"][0][l][n])
+                            child1["checklist"][child1["individual"][l][n]] += 1
+        print(child1)
+        print("child 2 ")
+        print(child2)
+        k = 0
+        for l in range(len(parents[male]["individual"][0])):
+            possible = True
+            for m in range(len(parents[male]["individual"][0][l])):
+                if child2["checklist"][parents[male]["individual"][0][l][m]] >= 2:  # if less than 2 project it has
+                    possible = False
+            if possible == True and k < requirements.shape[0] / 2:
+                k += 1
+                if len(parents[male]["individual"][0][l]) == len(child2["individual"][l]):
+                    for n in range(len(parents[male]["individual"][0][l])):
+                        child2["checklist"][child2["individual"][l][n]] -= 1
+                        child2["individual"][l][n] = parents[male]["individual"][0][l][n]
+                        child2["checklist"][child2["individual"][l][n]] += 1
+                elif len(parents[male]["individual"][0][l]) < len(child2["individual"][l]):
+                    forFixingNumber = -1
+                    for n in range(len(child2["individual"][l])):
+                        # print(child1["individual"][l])
+                        if n < len(parents[male]["individual"][0][l]):
+                            child2["checklist"][child2["individual"][l][n]] -= 1
+                            child2["individual"][l][n] = parents[male]["individual"][0][l][n]
+                            child2["checklist"][child2["individual"][l][n]] += 1
+                        elif n >= len(parents[male]["individual"][0][l]):
+                            forFixingNumber += 1
+                            child2["checklist"][child2["individual"][l][n - forFixingNumber]] -= 1
+                            del child2["individual"][l][n - forFixingNumber]
+                elif len(parents[male]["individual"][0][l]) > len(child2["individual"][l]):
+                    for n in range(len(parents[male]["individual"][0][l])):
+                        # print(child1["individual"][l])
+                        if n < len(child2["individual"][l]):
+                            child2["checklist"][child2["individual"][l][n]] -= 1
+                            child2["individual"][l][n] = parents[male]["individual"][0][l][n]
+                            child2["checklist"][child2["individual"][l][n]] += 1
+                        elif n >= len(child2["individual"][l]):
+                            # child1["checklist"][child1["individual"][l][n]] -= 1
+                            child2["individual"][l].append(parents[male]["individual"][0][l][n])
+                            child2["checklist"][child2["individual"][l][n]] += 1
+        print(child2)
+
 
 #print(parents)
 print()
-# asd = sorted(population,key = "fitness")
+
