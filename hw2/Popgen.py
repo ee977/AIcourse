@@ -15,9 +15,9 @@ with open(os.path.join(DATASET_DIR, DATASET_NAME, "proficiency_levels.pkl"), "rb
     proficiency_levels: np.ndarray = pickle.load(f)
 
 population = []
-populationNumber = 10
-iteration = 10
-elitismPercentage = 0.31
+populationNumber = 20
+iteration = 50
+elitismPercentage = 0.1
 mutationRate = 0.001
 fitnessBest = []
 fitnessWorst = []
@@ -75,20 +75,10 @@ for iter in range(iteration):
                 for j in range(len(population[x]["individual"][0][i])):  # add all values
                     fitnessScore += np.dot(requirements[i], proficiency_levels[population[x]["individual"][0][i][j]])
             population[x]["fitness"] = fitnessScore  # update old 0
-        sortedPop = sorted(population, key=lambda x: x['fitness'], reverse=True)  # sort by fitness score
-        #print("POPULATION FIRST")
-        #print(population)
-        elitismNumber = math.ceil(populationNumber * elitismPercentage)
-        for j in range(elitismNumber):  # ELITISM
-            newGen.append(sortedPop[j])  # for holding the elites
-    # check the elitism before and after selection
     else:
-        #print("POPULATION FIRST")
-        #print(population)
         """elitismNumber = math.ceil(populationNumber * elitismPercentage)
         for j in range(elitismNumber):  # ELITISM
             newGen.append(population[j])  # for holding the elites"""
-    #print(newGen)
     parents = []
     indvList = list(range(0, populationNumber))
     mod0 = [-1, -1]
@@ -96,17 +86,17 @@ for iter in range(iteration):
     bestOf = 2
     for j in range(populationNumber):   # TOURNAMENT SELECTION
         randIndv = random.randint(0, len(indvList) - 1)
-        mod0[1] = max(mod0[1], sortedPop[indvList[randIndv]]["fitness"])
-        if mod0[1] == sortedPop[indvList[randIndv]]["fitness"]:
+        mod0[1] = max(mod0[1], population[indvList[randIndv]]["fitness"])
+        if mod0[1] == population[indvList[randIndv]]["fitness"]:
             mod0[0] = indvList[randIndv]
         if counter == (bestOf -1):
-            parents.append(sortedPop[mod0[0]])
+            parents.append(population[mod0[0]])
             mod0 = [-1, -1]
             counter = -1
         del indvList[randIndv]
         counter += 1
     if populationNumber % (bestOf) != 0:   # add the one ones that are left if number is not divisible
-        parents.append(sortedPop[mod0[0]])
+        parents.append(population[mod0[0]])
 
     parentList = list(range(0, len(parents)))
     childsss = []
@@ -221,8 +211,11 @@ for iter in range(iteration):
         newGen.append(ind)
     #print("newGen before sort")
     #print(newGen)
-    
-    sortedNewGen = sorted(newGen, key=lambda x: x['fitness'], reverse= True)   #sort by fitness score
+    print("ASDASDSADSADASDASDSADSADASDASDSADSADASDASDSADSAD")
+    print(population)
+    population += childsss
+    print(population)
+    sortedNewGen = sorted(population, key=lambda x: x['fitness'], reverse= True)   #sort by fitness score
     #print("SORTED NEW GEEEEEEEEEEEEN")
     #print(sortedNewGen)
     #print(len(sortedNewGen))
