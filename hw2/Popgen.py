@@ -15,9 +15,10 @@ with open(os.path.join(DATASET_DIR, DATASET_NAME, "proficiency_levels.pkl"), "rb
     proficiency_levels: np.ndarray = pickle.load(f)
 
 population = []
-populationNumber = 20
-iteration = 50
-elitismPercentage = 0.1
+populationNumber = 100
+iteration = 90
+tournamentNum = 100
+elitismPercentage = 0.05
 mutationRate = 0.001
 fitnessBest = []
 fitnessWorst = []
@@ -71,20 +72,33 @@ for iter in range(iteration):
     if iter < 1:
         for x in range(populationNumber):  # fitness function for pop
             fitnessScore = 0
+            Wholesum = 0
+            SUMpROJECT = 0
             for i in range(requirements.shape[0]):  # fitness function for ind
+                k = 0
+                sum = 0
                 for j in range(len(population[x]["individual"][0][i])):  # add all values
-                    fitnessScore += np.dot(requirements[i], proficiency_levels[population[x]["individual"][0][i][j]])
+                    mx = np.multiply(requirements[i],proficiency_levels[population[x]["individual"][0][i][j]])
+                    sum += np.mean(mx[np.nonzero(mx)])
+                    k = k + 1
+                SUMpROJECT += sum / k
+            Wholesum = SUMpROJECT
+            fitnessScore = Wholesum / (requirements.shape[0]*100)
             population[x]["fitness"] = fitnessScore  # update old 0
     else:
         """elitismNumber = math.ceil(populationNumber * elitismPercentage)
         for j in range(elitismNumber):  # ELITISM
             newGen.append(population[j])  # for holding the elites"""
+
+    elitismNumber = math.ceil(populationNumber * elitismPercentage)
+
+    elitist = population[1:elitismNumber]
     parents = []
     indvList = list(range(0, populationNumber))
     mod0 = [-1, -1]
     counter = 0
-    bestOf = 2
-    for j in range(populationNumber):   # TOURNAMENT SELECTION
+    bestOf = 3
+    for j in range(tournamentNum):   # TOURNAMENT SELECTION
         randIndv = random.randint(0, len(indvList) - 1)
         mod0[1] = max(mod0[1], population[indvList[randIndv]]["fitness"])
         if mod0[1] == population[indvList[randIndv]]["fitness"]:
@@ -93,9 +107,8 @@ for iter in range(iteration):
             parents.append(population[mod0[0]])
             mod0 = [-1, -1]
             counter = -1
-        del indvList[randIndv]
         counter += 1
-    if populationNumber % (bestOf) != 0:   # add the one ones that are left if number is not divisible
+    if tournamentNum % (bestOf) != 0:   # add the one ones that are left if number is not divisible
         parents.append(population[mod0[0]])
 
     parentList = list(range(0, len(parents)))
@@ -197,9 +210,18 @@ for iter in range(iteration):
             c["individual"][0][randomTmp2] = temp
     for x in range(len(childsss)):  # fitness function for pop
         fitnessScore = 0
+        Wholesum = 0
+        SUMpROJECT = 0
         for i in range(requirements.shape[0]):  # fitness function for ind
-            for j in range(len(childsss[x]["individual"][0][i])):  # add all values
-                fitnessScore += np.dot(requirements[i], proficiency_levels[childsss[x]["individual"][0][i][j]])
+            k = 0
+            sum = 0
+            for j in range(len(population[x]["individual"][0][i])):  # add all values
+                mx = np.multiply(requirements[i], proficiency_levels[population[x]["individual"][0][i][j]])
+                sum += np.mean(mx[np.nonzero(mx)])
+                k = k + 1
+            SUMpROJECT += sum / k
+        Wholesum = SUMpROJECT
+        fitnessScore = Wholesum / (requirements.shape[0]*100)
         childsss[x]["fitness"] = fitnessScore  # update old 0
     #print("newGen with only elites")
     #print(newGen)
@@ -213,14 +235,14 @@ for iter in range(iteration):
     #print(newGen)
     print("ASDASDSADSADASDASDSADSADASDASDSADSADASDASDSADSAD")
     print(population)
-    population += childsss
+    population += childsss + elitist
     print(population)
     sortedNewGen = sorted(population, key=lambda x: x['fitness'], reverse= True)   #sort by fitness score
     #print("SORTED NEW GEEEEEEEEEEEEN")
     #print(sortedNewGen)
     #print(len(sortedNewGen))
 
-    #population = []
+    population = []
     population = sortedNewGen[0:populationNumber]
     print("COPIED NEWGEEEEEEEEEEEEEEN")
     print(population)
@@ -234,14 +256,13 @@ for iter in range(iteration):
 #print(childsss)
 
 ### plot
-print("adasd")
-print(len(fitnessBest))
-print(len(fitnessWorst))
-print(iteration)
+print("Best Score: ")
+print(fitnessBest[iteration-1])
 geno = list(range(0, iteration))
 
 plt.plot(geno,fitnessBest,geno,fitnessWorst)
-plt.show()
-
 plt.ylabel("Best - Worst Fitness")
 plt.xlabel("Generation")
+plt.title("Fitness Graph")
+plt.show()
+
