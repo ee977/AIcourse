@@ -7,6 +7,7 @@
 from Environment import Environment
 from rl_agents.RLAgent import RLAgent
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class QLearningAgent(RLAgent):
@@ -16,6 +17,8 @@ class QLearningAgent(RLAgent):
     alpha: float            # Alpha value for soft-update
     max_episode: int        # Maximum iteration
     Q: np.ndarray           # Q-Table as Numpy Array
+    x1 = []
+    y1 = []
 
     def __init__(self, env: Environment, seed: int, discount_rate: float, epsilon: float, epsilon_decay: float,
                  epsilon_min: float, alpha: float, max_episode: int):
@@ -49,6 +52,7 @@ class QLearningAgent(RLAgent):
         :param kwargs: Empty
         :return: Nothing"""
         for episode in range(self.max_episode):
+            self.x1.append(episode)
             state = self.env.reset()
             done = False
             next_state = state
@@ -57,12 +61,9 @@ class QLearningAgent(RLAgent):
                     action = np.random.randint(self.action_size)
                 else:
                     action = np.argmax(self.Q[state])
-
                 old_state = next_state
-
                 next_state, reward, _ = self.env.move(action)
                 next_state_position = self.env.to_position(next_state)
-
                 if self.env.grid[next_state_position[0]][next_state_position[1]] == 'G' or self.env.grid[next_state_position[0]][next_state_position[1]] == 'D':
                     done = True
                 TD = reward + self.discount_rate * np.max(self.Q[next_state]) - self.Q[old_state][action]
@@ -70,6 +71,16 @@ class QLearningAgent(RLAgent):
                 state = next_state
             if self.epsilon > self.epsilon_min:
                 self.epsilon *= self.epsilon_decay
+            _, total_reward = RLAgent.validate(self)
+            self.y1.append(total_reward)
+        stringg = "Alpha " + str(self.alpha)
+        plt.plot(self.x1, self.y1, label=stringg)
+        plt.xlabel('Episodes')
+        plt.ylabel('Total Reward')
+        plt.legend()
+        plt.show()
+        plt.clf()
+
         #print(self.Q)
     def act(self, state: int, is_training: bool) -> int:
         """DO NOT CHANGE the name, parameters and return type of the method.

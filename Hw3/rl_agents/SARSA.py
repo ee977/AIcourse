@@ -7,6 +7,7 @@
 from Environment import Environment
 from rl_agents.RLAgent import RLAgent
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class SARSAAgent(RLAgent):
@@ -56,7 +57,10 @@ class SARSAAgent(RLAgent):
         You will fill the Q-Table with Q-Learning algorithm.
         :param kwargs: Empty
         :return: Nothing"""
+        x2 = []
+        y2 = []
         for episode in range(self.max_episode):
+            x2.append(episode)
             state = self.env.reset()
             done = False
             next_state = state
@@ -82,6 +86,13 @@ class SARSAAgent(RLAgent):
                 action = next_action
             if self.epsilon > self.epsilon_min:
                 self.epsilon *= self.epsilon_decay
+            _, total_reward = RLAgent.validate(self)
+            y2.append(total_reward)
+        plt.plot(x2, y2, label="SARSA")
+        plt.xlabel('Episodes')
+        plt.ylabel('Total Reward')
+        plt.legend()
+        plt.show()
 
     def act(self, state: int, is_training: bool) -> int:
         """DO NOT CHANGE the name, parameters and return type of the method.
